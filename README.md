@@ -14,8 +14,11 @@ chrome --disable-web-security --disable-gpu --user-data-dir=/tmp http://frontend
 * http://backend.localhost/ - node application with will proxy couch requests and maintian auth access
 * http://couchdb.localhost/ - http endpint with a RESTful webserivice built-in (public data sources only) 
 
-### Deployment
+## Couch
+* http://couchdb.localhost/_utils - Gain access to admin panel. user:admin pass:password
+
+## Deployment
 * replace .env file contents with more secure access credintals
 * Define https TLD endpints for each microservice
 * enable logging
-* store/export databases in persistent storage  
+* store/export databases persistently 
