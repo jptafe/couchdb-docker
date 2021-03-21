@@ -1,0 +1,64 @@
+# Access via "http://localhost:8888"
+# phpmyadmin Access via "http://localhost:8889"
+#   (or "http://$(docker-machine ip):8080" if using docker-machine)
+version: '3.1'
+
+services:
+  router:
+    image: traefik:v2.4
+    container_name: router
+    ports:
+      - 80:80
+      - 8080:8080 
+    restart: always
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+  couchdb:
+    image: couchdb:3.1
+    container_name: couchdb
+    ports:
+      - 5984:5984
+    restart: always
+    environment:
+      COUCHDB_USER: ${DBU}
+      COUCHDB_PASSWORD: ${DBP}
+      COUCHDB_SECRET: ${DBS}
+      NODENAME: ${DBN}
+    volumes:
+      - ./couchdb/data:/home/couchdb/data:z
+      - ./couchdb/config:/opt/couchdb/etc/local.d/:z
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.couchdb.loadbalancer.server.port=5984"
+      - "traefik.http.routers.couchdb.rule=Host(`couchdb.localhost`)"
+  backend:
+    image: node:15-alpine3.10 
+    container_name: backend 
+    ports:
+      - 8888:8888
+    restart: always
+    volumes:
+      - ./backend:/home/node/app:z
+    working_dir: /home/node/app 
+    command: sh -c "/usr/local/bin/npm update && node ./index.js"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`backend.localhost`)"
+  frontend:
+    image: httpd:2.4-alpine
+    container_name: "frontend"
+    ports:
+      - 8889:80
+    restart: always
+    volumes:
+      - ./frontend:/usr/local/apache2/htdocs:z
+    environment:
+      API: "${API}"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"
