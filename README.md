@@ -1,24 +1,30 @@
 # Couchdb development infrastructure
 
-An exploration of couchdb, node and javascript inside Docker Microservices. 
+An exploration of couchdb, node and javascript inside Docker Microservices. This project forms the basis for an investigation of nosql without that pesky CORS getting in the way. 
 
 ## Stand up environment 
 ```
+cp env_example .env
 docker-compose up
-chrome --disable-web-security --disable-gpu --user-data-dir=/tmp http://frontend.localhost
+firefox http://localhost/frontend/
 ```
-### necessary to turn off CORS, as infrasturcture is not using https which is required for cross-origin sessions
+### NOTE the trailing slash 
 
 ## URLs for each microservice
-* http://frontend.localhost/ - html/css/js environment that will use Fetch API to access couchdb 
-* http://backend.localhost/ - node application with will proxy couch requests and maintian auth access
-* http://couchdb.localhost/ - http endpint with a RESTful webserivice built-in (public data sources only) 
+* http://localhost/frontend/ - html/css/js environment that will use Fetch API to access couchdb 
+* http://localhost/backend/index.js - node application with will proxy couch requests and maintian auth access
+* http://localhost/couchdb/\_utils/ - http endpint with a RESTful webserivice built-in 
 
-## Couch
-* http://couchdb.localhost/_utils - Gain access to admin panel. user:admin pass:password
+## FILES in this project
+* ./frontend - Vanilla JS experience
+* ./backend - Vanilla Node JS experience
+* ./couchdb - configuration and data for persistence
 
-## Deployment
-* replace .env file contents with more secure access credintals
-* Define https TLD endpints for each microservice
-* enable logging
-* store/export databases persistently 
+## TODO build as far as possible a JavaScript UI that:
+* Build shopping catalog with products and categories
+* Build a shopping cart experience that stores product choices on a per-user basis
+* Build a login/registration system that can attach to the cart document in couchdb
+* Build a checkout model that will attach invoices of cart items and flush cart when done
+
+## Possible Gotchyas
+* frontend container has no npm executable, may need this just like backend...

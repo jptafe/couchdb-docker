@@ -35,7 +35,9 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.couchdb.loadbalancer.server.port=5984"
-      - "traefik.http.routers.couchdb.rule=Host(`couchdb.localhost`)"
+      - "traefik.http.routers.couchdb.rule=(Host(`localhost`) && PathPrefix(`/couchdb`))"
+      - "traefik.http.routers.couchdb.middlewares=couchdb-stripprefix"
+      - "traefik.http.middlewares.couchdb-stripprefix.stripprefix.prefixes=/couchdb"
   backend:
     image: node:15-alpine3.10 
     container_name: backend 
@@ -48,7 +50,11 @@ services:
     command: sh -c "/usr/local/bin/npm update && node ./index.js"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`backend.localhost`)"
+      - "traefik.http.services.backend.loadbalancer.server.port=8888"
+      - "traefik.http.routers.backend.entrypoints=web" 
+      - "traefik.http.routers.backend.rule=(Host(`localhost`) && PathPrefix(`/backend`))"
+      - "traefik.http.routers.backend.middlewares=backend-stripprefix"
+      - "traefik.http.middlewares.backend-stripprefix.stripprefix.prefixes=/backend"
   frontend:
     image: httpd:2.4-alpine
     container_name: "frontend"
@@ -61,4 +67,9 @@ services:
       API: "${API}"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"
+      - "traefik.http.routers.frontend.entrypoints=web" 
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+      - "traefik.http.routers.frontend.rule=(Host(`localhost`) && PathPrefix(`/frontend`))"
+      - "traefik.http.routers.frontend.middlewares=frontend-stripprefix"
+      - "traefik.http.middlewares.frontend-stripprefix.stripprefix.prefixes=/frontend"
+      - "traefik.http.middlewares.frontend.stripprefix.forceSlash=true"
