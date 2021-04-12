@@ -28,3 +28,5 @@ firefox http://localhost/frontend/
 
 ## Possible Gotchyas
 * frontend container has no npm executable, may need this just like backend...
+
+[![Try in PWD](https://raw.githubusercontent.com/play-with-docker/stacks/master/assets/images/button.png)](https://labs.play-with-docker.com/?stack=https://raw.githubusercontent.com/jptafe/couchdb-docker/main/docker-compose.yml)
