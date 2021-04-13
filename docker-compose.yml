@@ -73,5 +73,5 @@ services:
       - "traefik.http.routers.frontend.middlewares=frontend-stripprefix"
       - "traefik.http.middlewares.frontend-stripprefix.stripprefix.prefixes=/frontend"
       - "traefik.http.middlewares.frontend.stripprefix.forceSlash=true"
-  redis-commander:
-    build: https://github.com/jptafe/couchdb-docker 
+  couchdb-docker:
+    build: https://github.com/jptafe/couchdb-docker.git 
